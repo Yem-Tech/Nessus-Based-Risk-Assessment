@@ -42,6 +42,8 @@ The assessment follows a five-stage process aligned with standard risk managemen
 
 | Field | Detail |
 |---|---|
+| Prepared For | Hypertechai |
+| Prepared By | Olayemi |
 | Assessment Basis | Nessus Essentials vulnerability scan output and analyst-led CVSS v2.0 risk scoring |
 | Target Host | `www.halisans.com` — `66.29.153.49` |
 | OS (Nessus Fingerprint) | AIX 5.3 |
