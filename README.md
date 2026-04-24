@@ -43,7 +43,7 @@ The assessment follows a five-stage process aligned with standard risk managemen
 | Field | Detail |
 |---|---|
 | Prepared For | Hypertechai |
-| Prepared By | Olayemi Owoeye |
+| Prepared By | Olayemi |
 | Assessment Basis | Nessus Essentials vulnerability scan output and analyst-led CVSS v2.0 risk scoring |
 | Target Host | `www.halisans.com` — `66.29.153.49` |
 | OS (Nessus Fingerprint) | AIX 5.3 |
@@ -70,7 +70,7 @@ The assessment follows a five-stage process aligned with standard risk managemen
 
 The Nessus scan was executed against `www.halisans.com` using a Basic Network Scan policy. The scan returned 38 total vulnerability records. Risk identification began by classifying findings according to Nessus severity and evaluating each for potential business relevance beyond the technical CVSS rating alone.
 
-![Nessus Vulnerability List — 38 Findings](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/101-Nessus_vuln.png)
+![Nessus Vulnerability List — 38 Findings](screenshots/101-Nessus_vuln.png)
 
 **Scan Severity Distribution:**
 
@@ -129,7 +129,7 @@ CVSS v2.0 was used as the scoring framework, with calculator outputs recorded as
 **Affected Host:** `www.halisans.com` &nbsp;|&nbsp; **Affected Port:** `26/tcp` (SMTP on non-standard port)  
 **CVSS v2.0 Vector:** `CVSS2#AV:N/AC:L/Au:N/C:N/I:P/A:N`
 
-![CVSS v2.0 Score — V-01 (Score: 5.0)](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/001-Vulnerability_Calc_cvss2.0.png)
+![CVSS v2.0 Score — V-01 (Score: 5.0)](screenshots/001-Vulnerability_Calc_cvss2_0.png)
 
 **CVSS v2.0 Score Breakdown:**
 
@@ -168,7 +168,7 @@ Affected Port: 26/tcp — www.halisans.com
 **Affected Host:** `www.halisans.com` &nbsp;|&nbsp; **Affected Ports:** `443/tcp`, `2080/tcp`, `2078/tcp`, `2091/tcp`  
 **CVSS v3.0 Vector:** `CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N`
 
-![CVSS v2.0 Score — V-02 (Score: 6.4)](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/002-vuln_Calc_cvss2.0.png)
+![CVSS v2.0 Score — V-02 (Score: 6.4)](screenshots/002-vuln_Calc_cvss2_0.png)
 
 **CVSS Score Breakdown:**
 
@@ -198,7 +198,7 @@ Affected Ports / Hosts:
   2091 / tcp / www  →  www.halisans.com
 ```
 
-![Nessus SSL Certificate Detail — Plugin #51192](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/102-Nessus_ssl_cert_.png)
+![Nessus SSL Certificate Detail — Plugin #51192](screenshots/102-Nessus_SSL_Cert.png)
 
 **Risk Statement:**  
 *Because the SSL/TLS certificate for `www.halisans.com` has expired and is no longer validated by a trusted Certificate Authority, there is a risk that users connecting over HTTPS on ports 443, 2080, 2078, and 2091 are exposed to man-in-the-middle interception of session data, credentials, and sensitive communications. Browser trust warnings will additionally erode end-user confidence and may cause service abandonment.*
@@ -236,24 +236,26 @@ Both findings exceed the tolerable risk threshold. Neither should be deferred to
 
 ## 5. Risk Heat Map
 
-Findings are positioned on a 3×3 probability × impact risk matrix. Probability is informed by the CVSS Exploitability Subscore and the public availability of exploit techniques. Impact reflects the assessed business consequence of successful exploitation.
+Each identified vulnerability is plotted directly onto the risk matrix below. The axes represent **Likelihood** (probability of exploitation, informed by CVSS Exploitability Subscore) and **Impact** (assessed business consequence of successful exploitation). The cell colour indicates the resulting risk type for each vulnerability.
 
-**Risk Matrix:**
+> **Legend:** 🔴 High Risk &nbsp;|&nbsp; 🟡 Medium Risk &nbsp;|&nbsp; 🟢 Low Risk
 
-| | **Low Impact** | **Medium Impact** | **High Impact** |
+**Risk Heat Map — Vulnerabilities Plotted:**
+
+| Likelihood ↓ / Impact → | **Low Impact** | **Medium Impact** | **High Impact** |
 |---|---|---|---|
-| **High Probability** | 🟡 Medium | 🔴 **High** | 🔴 **High** |
-| **Medium Probability** | 🟢 Low | 🟡 Medium | 🔴 **High** |
-| **Low Probability** | 🟢 Low | 🟢 Low | 🟡 Medium |
+| **High Likelihood** | 🟡 Medium | 🔴 **V-01 — SMTP Non-standard Port Detection** *(Score: 5 — High Risk)* &nbsp; 🔴 **V-02 — SSL Certificate Cannot Be Trusted** *(Score: 6 — High Risk)* | 🔴 High Risk |
+| **Medium Likelihood** | 🟢 Low Risk | 🟡 Medium Risk | 🔴 High Risk |
+| **Low Likelihood** | 🟢 Low Risk | 🟢 Low Risk | 🟡 Medium Risk |
 
-**Finding Placement:**
+**Heat Map Justification:**
 
-| Ref | Finding | Probability Basis | Impact Basis | Matrix Cell |
-|---|---|---|---|---|
-| V-01 | SMTP Non-standard Port | High — Exploitability Subscore: 10.0; no authentication required | Medium — integrity and reputational impact via mail relay abuse | 🔴 **High** |
-| V-02 | SSL Certificate Cannot Be Trusted | High — Exploitability Subscore: 10.0; network-adjacent, no auth | Medium — confidentiality and integrity risk via MitM; user trust erosion | 🔴 **High** |
+| Ref | Vulnerability | Risk Type | Likelihood Basis | Impact Basis | Cell Position |
+|---|---|---|---|---|---|
+| V-01 | SMTP Non-standard Port Detection | 🔴 **High Risk** | **High** — CVSS Exploitability Subscore: 10.0; no authentication required; network-accessible | **Medium** — SMTP relay abuse can cause IP blacklisting, spam propagation, and reputational damage to mail infrastructure | High Likelihood × Medium Impact |
+| V-02 | SSL Certificate Cannot Be Trusted | 🔴 **High Risk** | **High** — CVSS Exploitability Subscore: 10.0; no authentication required; publicly exposed on four ports | **Medium** — Expired certificate enables MitM interception of user sessions, credentials, and sensitive data; browser warnings erode user trust | High Likelihood × Medium Impact |
 
-Both findings occupy the **High** cell (High Probability × Medium Impact), confirming immediate remediation priority.
+Both vulnerabilities are plotted in the **High Likelihood × Medium Impact** cell, producing a **High Risk** classification for each. This position confirms that both findings exceed the organizational risk appetite threshold and require immediate escalation and remediation — they cannot be deferred to a routine patching cycle without documented senior stakeholder risk acceptance.
 
 ---
 
