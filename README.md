@@ -1,323 +1,283 @@
 # Nessus-Based Vulnerability Risk Assessment — halisans.com
 
-**Domain:** `www.halisans.com` &nbsp;|&nbsp; **IP:** `66.29.153.49` &nbsp;|&nbsp; **OS Fingerprint:** AIX 5.3  
-**Tool:** Tenable Nessus Essentials v10.11.3 &nbsp;|&nbsp; **Policy:** Basic Network Scan &nbsp;|&nbsp; **Severity Base:** CVSS v3.0  
-**Platform:** Kali Linux &nbsp;|&nbsp; **Classification:** Authorized Academic Security Assessment &nbsp;|&nbsp; **Date:** March 2026
+> **Target shown in host results:** `www.halisans.com` — `66.29.153.49`  
+> **Assessment period:** March 2026  
+> **Tool:** Tenable Nessus Essentials 10.11.3 on Kali Linux  
+> **Policy shown in scan history:** Basic Network Scan  
+> **Purpose:** Academic vulnerability assessment, evidence review, and risk treatment planning
 
----
+## Executive summary
 
-> This report translates Nessus scan output into a structured, governance-ready risk assessment following a five-stage methodology: identification → scoring → evaluation → heat map positioning → treatment. All findings are scored using CVSS v2.0 and evaluated against a defined risk appetite threshold.
+This project reviews Nessus scan evidence and develops treatment recommendations for two scanner-reported findings: an SMTP service on TCP port 26 and a certificate trust issue involving an expired certificate in the presented chain.
 
----
+Both findings are displayed as **Medium** in their plugin-detail screenshots. The SMTP finding shows a CVSS v2.0 base score of **5.0**. A separate calculator screenshot shows **6.4**, but its metric selections and relationship to the certificate finding are not fully documented.
 
-## Table of Contents
+These findings require configuration and endpoint validation. The evidence does not demonstrate a backdoor, open mail relay, intercepted communications, or successful exploitation. Business risk ratings remain provisional because service ownership, asset criticality, compensating controls, and organizational risk appetite were not established.
 
-- [Executive Summary](#executive-summary)
-- [Assessment Overview](#assessment-overview)
-- [1. Risk Identification — Nessus Scan Results](#1-risk-identification--nessus-scan-results)
-- [2. Risk Scoring Methodology](#2-risk-scoring-methodology)
-- [3. Validated Findings](#3-validated-findings)
-  - [V-01 — SMTP Server Non-standard Port Detection](#v-01--smtp-server-non-standard-port-detection)
-  - [V-02 — SSL Certificate Cannot Be Trusted](#v-02--ssl-certificate-cannot-be-trusted)
-- [4. Risk Evaluation Against Risk Appetite](#4-risk-evaluation-against-risk-appetite)
-- [5. Risk Heat Map](#5-risk-heat-map)
-- [6. Risk Treatment Recommendations](#6-risk-treatment-recommendations)
-- [Appendix — Risk Register](#appendix--risk-register)
-- [Screenshot Index](#screenshot-index)
-- [Disclaimer](#disclaimer)
+This repository develops the Nessus analysis associated with the [footprinting and web assessment project](https://github.com/Yem-Tech/Vulnerability-Assessment-Report-halisans.com). It is not presented as a separate scan campaign of the same target.
 
----
+## Contents
 
-## Executive Summary
+- [Scope and assessment context](#scope-and-assessment-context)
+- [Evidence inventory](#evidence-inventory)
+- [Assessment methodology](#assessment-methodology)
+- [Scanner-reported findings](#scanner-reported-findings)
+- [CVSS and contextual risk](#cvss-and-contextual-risk)
+- [Academic risk matrix](#academic-risk-matrix)
+- [Risk register and treatment plan](#risk-register-and-treatment-plan)
+- [Verification and closure criteria](#verification-and-closure-criteria)
+- [Limitations](#limitations)
+- [Screenshot checklist](#screenshot-checklist)
+- [References](#references)
 
-This assessment presents a structured risk analysis derived from a Nessus Essentials vulnerability scan conducted against `www.halisans.com`. The scan returned **38 findings** across one actionable severity tier (Medium) and 37 informational items. Two vulnerabilities were escalated for formal risk scoring and treatment planning based on their exploitability profile and potential business impact.
+## Scope and assessment context
 
-Both escalated findings — an SMTP service operating on a non-standard port and an expired SSL/TLS certificate — score in the **High** tier under the analyst-defined risk scoring model and plot in the high-priority zone of the risk heat map. Neither falls within the organization's assumed risk appetite. Immediate remediation is recommended.
-
-The assessment follows a five-stage process aligned with standard risk management practice: identification, scoring, evaluation, matrix positioning, and treatment selection.
-
----
-
-## Assessment Overview
-
-| Field | Detail |
+| Field | Evidence-based description |
 |---|---|
-| Prepared For | Hypertechai |
-| Prepared By | Olayemi |
-| Assessment Basis | Nessus Essentials vulnerability scan output and analyst-led CVSS v2.0 risk scoring |
-| Target Host | `www.halisans.com` — `66.29.153.49` |
-| OS (Nessus Fingerprint) | AIX 5.3 |
-| Scan Policy | Basic Network Scan |
-| Severity Base | CVSS v3.0 (Nessus) / CVSS v2.0 (analyst scoring) |
-| Scanner | Local Scanner — Nessus Essentials v10.11.3 |
-| Total Vulnerabilities Found | 38 (1 Medium, 37 Informational) |
-| Findings Escalated for Scoring | 2 |
-| Auth Status | Unauthenticated |
+| Target host | `www.halisans.com` |
+| Observed IPv4 address | `66.29.153.49` |
+| Scanner version | Nessus 10.11.3, shown during installation |
+| Scan policy | Basic Network Scan, shown in a running-scan view |
+| Authentication | Host view displays `Auth: N/A`; no authenticated assessment is demonstrated |
+| OS identification | Nessus displays `AIX 5.3`; not independently verified |
+| Scan dates | March 2026, based on the supplied evidence |
+| Assessment status | Historical screenshot-based review; no remediation or retest demonstrated |
 
-### Methodology at a Glance
+The screenshots include differently named scan views. A scan label containing “60 PCs” is not evidence that 60 hosts were assessed. A full export and scan configuration would be needed to reconcile all scan runs, targets, and result counts.
 
-| Stage | Purpose | Output |
-|---|---|---|
-| Risk Identification | Classify Nessus findings by severity and exposure context | Initial finding inventory |
-| Risk Scoring | Apply CVSS v2.0 exploitability and impact ratings | Comparable risk scores per finding |
-| Risk Evaluation | Benchmark scores against organizational risk appetite | Accept / Escalate decisions |
-| Risk Matrix Plotting | Position findings on a probability × impact heat map | Visual prioritization |
-| Risk Treatment | Assign a treatment option to each escalated finding | Remediation plan with ownership |
+## Evidence inventory
 
----
+The host-results screenshot shows **38 finding entries** for `www.halisans.com`. The detailed plugin screenshots display **43 entries** in a view containing **two hosts**. The screenshots do not establish whether these views represent the same run or different histories.
 
-## 1. Risk Identification — Nessus Scan Results
+Do not combine these counts or describe all entries as confirmed vulnerabilities. Informational service and configuration observations are included. An exact severity distribution cannot be established from the visible rows and chart alone.
 
-The Nessus scan was executed against `www.halisans.com` using a Basic Network Scan policy. The scan returned 38 total vulnerability records. Risk identification began by classifying findings according to Nessus severity and evaluating each for potential business relevance beyond the technical CVSS rating alone.
+![Nessus host results showing 38 entries](Screenshots/12-Nessus_Vuln_Scan_result.png)
 
-![Nessus Vulnerability List — 38 Findings](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/101-Nessus_vuln.png)
+Other evidence includes:
 
-**Scan Severity Distribution:**
+- An SMTP plugin-detail screenshot with a service banner and port.
+- A certificate plugin-detail screenshot with expired-certificate output and listed endpoints.
+- Two CVSS v2.0 calculator screenshots.
+- Setup and running-scan screenshots, which document workflow but do not establish final scan completion.
 
-| Severity | Count | Action |
-|---|---|---|
-| Critical | 0 | — |
-| High | 0 | — |
-| Medium | 1 | Escalated for scoring |
-| Low | 0 | — |
-| Informational | 37 | Logged; not escalated |
+## Assessment methodology
 
-**Host Context:**
+1. **Identify:** Read host results and individual plugin outputs, preserving the target and port for each observation.
+2. **Review technical severity:** Record the scanner's displayed severity and supported CVSS information without treating CVSS as a business-risk score.
+3. **Evaluate context:** Identify the missing information needed to assess likelihood and business impact.
+4. **Prioritize treatment:** Recommend validation and configuration review based on the observed condition.
+5. **Define closure:** Specify evidence needed to confirm remediation, expected configuration, or a false positive.
 
-| Attribute | Value |
+“Scanner-reported” means the condition appears in the supplied tool output. “Independently validated” would require additional evidence; neither finding is labelled independently validated here.
+
+## Scanner-reported findings
+
+### V-01: SMTP Server Non-standard Port Detection
+
+| Field | Observed value |
 |---|---|
-| IP Address | `66.29.153.49` |
-| Hostname | `www.halisans.com` |
-| OS (Nessus) | AIX 5.3 |
-| Scan Start | Today at 10:55 AM |
-| Authentication | N/A (unauthenticated scan) |
+| Plugin ID | 18391 |
+| Plugin family | Backdoors |
+| Scanner severity | Medium |
+| Host | `www.halisans.com` |
+| Port | 26/TCP |
+| CVSS v2.0 base score | 5.0 |
+| CVSS v2.0 vector shown | `AV:N/AC:L/Au:N/C:N/I:P/A:N` |
+| Evidence status | Service detected; purpose and security configuration not validated |
 
-**Families detected:** Backdoors, General, DNS, FTP, Service Detection, Misc.
+**Observed output**
 
-> **Analyst Note:** Nessus severity ratings indicate technical seriousness but do not independently reflect organizational risk. Both escalated findings were re-evaluated through CVSS v2.0 scoring to produce business-contextualised risk ratings. Informational findings were reviewed and determined to fall within acceptable thresholds for this assessment scope.
-
----
-
-## 2. Risk Scoring Methodology
-
-Each escalated finding was scored across two dimensions — **Exploitability** and **Impact** — using a three-point scale. The composite score determines the risk rating and drives heat map placement and treatment selection.
-
-**Scoring Scale:**
-
-| Factor | Low (1) | Medium (2) | High (3) |
-|---|---|---|---|
-| Exploitability | Difficult to exploit; requires rare conditions or significant attacker capability | Exploitable with moderate effort or partial access | Straightforward; publicly documented or readily weaponizable |
-| Impact | Minor operational effect or limited business consequence | Noticeable service, integrity, or confidentiality impact | Major disruption, data exposure, or compromise of critical assets |
-
-**Formula:** `Risk Score = Exploitability Rating + Impact Rating`
-
-| Composite Score | Risk Rating |
-|---|---|
-| 2 | Low |
-| 3 – 4 | Medium |
-| 5 – 6 | High |
-
-CVSS v2.0 was used as the scoring framework, with calculator outputs recorded as evidence for each finding.
-
----
-
-## 3. Validated Findings
-
-### V-01 — SMTP Server Non-standard Port Detection
-
-**Nessus Plugin:** `#18391` &nbsp;|&nbsp; **Family:** Backdoors &nbsp;|&nbsp; **Severity:** Medium  
-**Affected Host:** `www.halisans.com` &nbsp;|&nbsp; **Affected Port:** `26/tcp` (SMTP on non-standard port)  
-**CVSS v2.0 Vector:** `CVSS2#AV:N/AC:L/Au:N/C:N/I:P/A:N`
-
-![CVSS v2.0 Score — V-01 (Score: 5.0)](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/001-Vulnerability_Calc_cvss2.0.png)
-
-**CVSS v2.0 Score Breakdown:**
-
-| Metric | Value |
-|---|---|
-| Base Score | **5.0** |
-| Impact Subscore | 2.9 |
-| Exploitability Subscore | 10.0 |
-| Temporal Score | N/A |
-| Environmental Score | N/A |
-| **Overall CVSS Score** | **5.0 — Medium** |
-
-**Technical Description:**  
-An SMTP server is operating on port `26/tcp`, which is not a standard SMTP port. Nessus classifies this under the Backdoors family, flagging the configuration as a potential covert channel that could be used by an attacker to relay spam, bypass email filtering, or maintain persistent unauthorized access to a target system.
-
-**Nessus Plugin Output:**
-```
-Banner : 220-premium138.web-hosting.com ESMTP Exim 4.99.1 #2 Tue, 24 Mar 2026 11:58:30 -0400
-         220-We do not authorize the use of this system to transport unsolicited,
-         220 and/or bulk e-mail.
-Affected Port: 26/tcp — www.halisans.com
+```text
+220-premium138.web-hosting.com ESMTP Exim 4.99.1 #2
+220-We do not authorize the use of this system to transport unsolicited,
+220 and/or bulk e-mail.
+Port: 26/tcp/smtp
+Host: www.halisans.com
 ```
 
-**Risk Statement:**  
-*Because an SMTP service is running on a non-standard port (`26/tcp`) on `www.halisans.com`, there is a risk that an attacker could exploit this configuration to relay unsolicited email or use the channel for covert command-and-control communication, potentially resulting in IP blacklisting, reputational damage to the mail infrastructure, and loss of email deliverability.*
+![SMTP plugin detail and service banner](Screenshots/101-Nessus_vuln.png)
 
-**Recommended Solution:** Audit the SMTP server configuration. If port 26 is not operationally required, disable it immediately. If required, enforce strict access controls and restrict relay permissions to authorized hosts only. Review Exim version for known CVEs.
+**Interpretation**
 
-**Reference:** [http://www.icir.org/vern/papers/backdoor/](http://www.icir.org/vern/papers/backdoor/)
+Nessus detected an SMTP service on a non-standard port and captured an Exim banner. Although the plugin belongs to the Backdoors family and describes a possible backdoor scenario, neither its family nor the port proves malicious activity. The banner does not establish that the service is an open relay or affected by a specific Exim vulnerability.
 
----
+**Conditional risk statement**
 
-### V-02 — SSL Certificate Cannot Be Trusted
+If this listener is unnecessary, improperly restricted, or permits unauthorized relay, it could increase exposure to mail abuse and associated operational or reputational consequences. Those conditions were not demonstrated by the supplied evidence.
 
-**Nessus Plugin:** `#51192` &nbsp;|&nbsp; **Family:** General &nbsp;|&nbsp; **Severity:** Medium  
-**Affected Host:** `www.halisans.com` &nbsp;|&nbsp; **Affected Ports:** `443/tcp`, `2080/tcp`, `2078/tcp`, `2091/tcp`  
-**CVSS v3.0 Vector:** `CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N`
+**Recommended treatment**
 
-![CVSS v2.0 Score — V-02 (Score: 6.4)](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/002-vuln_Calc_cvss2.0.png)
+- Confirm the service's owner, purpose, and expected port with the hosting administrator.
+- Review relay permissions, authentication where appropriate, access restrictions, and mail-service monitoring.
+- Restrict or remove the listener if it is unnecessary and the change is approved by its owner.
+- Validate software version and patch status against applicable advisories before claiming a CVE match.
 
-**CVSS Score Breakdown:**
+### V-02: SSL Certificate Cannot Be Trusted
 
-| Metric | Value |
+| Field | Observed value |
 |---|---|
-| CVSS v2.0 Base Score | **6.4** |
-| Impact Subscore | 4.9 |
-| Exploitability Subscore | 10.0 |
-| CVSS v3.0 Base Score | **6.5** |
-| **Overall CVSS Score** | **6.4 (v2.0) / 6.5 (v3.0) — Medium** |
+| Finding | SSL Certificate Cannot Be Trusted |
+| Reference plugin | Tenable 51192; ID not visible in the supplied certificate screenshot |
+| Scanner severity | Medium |
+| Host | `www.halisans.com` |
+| Listed TCP ports | 443, 2078, 2080, 2091 |
+| Certificate subject | `CN=halisans.com` |
+| Not After value shown | September 16, 2025, 22:59:59 GMT |
+| Evidence status | Scanner reported an expired certificate in the chain; per-endpoint validation pending |
 
-**Technical Description:**  
-The X.509 SSL/TLS certificate presented by `www.halisans.com` cannot be trusted. Nessus identified that the certificate chain **has expired**, with the `Not After` validity date recorded as `Sep 16 21:59:59 2025 GMT`. An expired certificate breaks the chain of trust between the server and connecting clients, removing a critical authentication control and significantly increasing the viability of man-in-the-middle (MitM) attacks against web application users.
+**Observed output**
 
-**Nessus Plugin Output:**
-```
+```text
 The following certificate was part of the certificate chain
 sent by the remote host, but it has expired:
 
-|-Subject  : CN=halisans.com
-|-Not After : Sep 16 21:59:59 2025 GMT
-
-Affected Ports / Hosts:
-  2080 / tcp / www  →  www.halisans.com
-   443 / tcp / www  →  www.halisans.com
-  2078 / tcp / www  →  www.halisans.com
-  2091 / tcp / www  →  www.halisans.com
+Subject   : CN=halisans.com
+Not After : Sep 16 22:59:59 2025 GMT
 ```
 
-![Nessus SSL Certificate Detail — Plugin #51192](https://github.com/Yem-Tech/Nessus-Based-Risk-Assessment/blob/main/Screenshots/102-Nessus_ssl_cert_.png)
+The screenshot lists `www.halisans.com` on TCP ports 2080, 443, 2078, and 2091 beneath this finding.
 
-**Risk Statement:**  
-*Because the SSL/TLS certificate for `www.halisans.com` has expired and is no longer validated by a trusted Certificate Authority, there is a risk that users connecting over HTTPS on ports 443, 2080, 2078, and 2091 are exposed to man-in-the-middle interception of session data, credentials, and sensitive communications. Browser trust warnings will additionally erode end-user confidence and may cause service abandonment.*
+![Certificate trust finding and expired certificate output](Screenshots/102-Nessus_ssl_cert_.png)
 
-**Recommended Solution:** Immediately renew the SSL/TLS certificate from a trusted Certificate Authority. Ensure the complete certificate chain — including intermediate certificates — is correctly installed on the server. Implement automated certificate renewal (e.g., via Let's Encrypt / ACME protocol) to prevent future expiry-related lapses.
+**Interpretation**
 
-**References:**  
-- [https://www.itu.int/rec/T-REC-X.509/en](https://www.itu.int/rec/T-REC-X.509/en)  
-- [https://en.wikipedia.org/wiki/X.509](https://en.wikipedia.org/wiki/X.509)
+The scanner reports a certificate-chain trust problem with an expired certificate. Validate the full chain, server name indication (SNI), hostname matching, client trust store, and scanner time on each listed endpoint before finalizing the cause and scope.
 
----
+Certificate expiration can cause clients to reject connections or show trust warnings. It does not, by itself, remove TLS encryption or demonstrate interception. Users bypassing validation failures could weaken assurance of the server's identity, depending on the client and surrounding conditions.
 
-## 4. Risk Evaluation Against Risk Appetite
+**Conditional risk statement**
 
-Risk evaluation benchmarks each finding's composite score against the assumed organizational risk appetite. The model below reflects standard practice: Low findings are within appetite, Medium findings are conditionally tolerable pending a remediation commitment, and High findings exceed appetite and require immediate escalation.
+If production clients receive an expired or otherwise invalid chain, they may experience connection failures or trust warnings. If users or applications bypass those checks, server-authentication assurance may be reduced. No interception or credential exposure was demonstrated.
 
-**Risk Appetite Model:**
+**Recommended treatment**
 
-| Risk Rating | Appetite Position | Required Action |
+- Inspect the certificate chain served by each endpoint using the intended hostname and SNI.
+- Renew or replace expired certificates and correct incomplete or incorrect chain deployment.
+- Confirm hostname coverage and validity periods.
+- Introduce certificate-expiry monitoring and renewal automation where supported.
+- Verify deployment across all relevant listeners and retest with a trusted client.
+
+## CVSS and contextual risk
+
+CVSS describes technical vulnerability severity. It does not directly calculate exploitation probability, business impact, or organizational risk appetite.
+
+| Evidence | What is supported | Limitation |
 |---|---|---|
-| Low (Score 2) | Within appetite | Accept or address during routine hardening cycles |
-| Medium (Score 3–4) | Conditionally tolerable | Remediate within an agreed timeline; track to verified closure |
-| High (Score 5–6) | Above appetite | Escalate immediately; assign ownership and enforce a remediation deadline |
+| SMTP plugin screenshot | CVSS v2.0 base score 5.0 and vector | Scanner rating; no business-context assessment |
+| Calculator image 001 | Base 5.0, impact 2.9, exploitability 10.0 | Metric selections are not shown; matches the SMTP plugin score |
+| Calculator image 002 | Base 6.4, impact 4.9, exploitability 10.0 | Vector and target association are not demonstrated |
+| Certificate plugin screenshot | Scanner severity Medium | CVSS score and vector are not visible |
+| Running-scan view | Severity base labelled CVSS v3.0 | Does not independently establish each finding's v3.0 score |
 
-**Evaluation Summary:**
+![CVSS v2.0 calculator output showing 5.0](Screenshots/001-Vulnerability_Calc_cvss2.0.png)
+![CVSS v2.0 calculator output showing 6.4](Screenshots/002-vuln_Calc_cvss2.0.png)
 
-| Ref | Finding | CVSS Score | Composite Score | Risk Rating | Appetite Position |
-|---|---|---|---|---|---|
-| V-01 | SMTP Non-standard Port Detection | 5.0 (v2.0) | 5 — High | 🔴 High | Above appetite — escalate immediately |
-| V-02 | SSL Certificate Cannot Be Trusted | 6.4 (v2.0) / 6.5 (v3.0) | 6 — High | 🔴 High | Above appetite — escalate immediately |
+The 6.4 calculator output is retained as scoring practice, not assigned as a verified certificate finding score. No CVSS v3.0 score is claimed from the supplied certificate evidence. A maximum exploitability subscore does not establish that exploitation is highly probable.
 
-Both findings exceed the tolerable risk threshold. Neither should be deferred to a routine patching cycle without documented risk acceptance from a senior stakeholder.
+## Academic risk matrix
 
----
+The following is a **hypothetical learning model**, not an approved organizational risk policy. Likelihood and impact must be assessed using documented context rather than copied directly from CVSS.
 
-## 5. Risk Heat Map
-
-Each identified vulnerability is plotted directly onto the risk matrix below. The axes represent **Likelihood** (probability of exploitation, informed by CVSS Exploitability Subscore) and **Impact** (assessed business consequence of successful exploitation). The cell colour indicates the resulting risk type for each vulnerability.
-
-> **Legend:** 🔴 High Risk &nbsp;|&nbsp; 🟡 Medium Risk &nbsp;|&nbsp; 🟢 Low Risk
-
-**Risk Heat Map — Vulnerabilities Plotted:**
-
-| Likelihood ↓ / Impact → | **Low Impact** | **Medium Impact** | **High Impact** |
-|---|---|---|---|
-| **High Likelihood** | 🟡 Medium | 🔴 **V-01 — SMTP Non-standard Port Detection** *(Score: 5 — High Risk)* &nbsp; 🔴 **V-02 — SSL Certificate Cannot Be Trusted** *(Score: 6 — High Risk)* | 🔴 High Risk |
-| **Medium Likelihood** | 🟢 Low Risk | 🟡 Medium Risk | 🔴 High Risk |
-| **Low Likelihood** | 🟢 Low Risk | 🟢 Low Risk | 🟡 Medium Risk |
-
-**Heat Map Justification:**
-
-| Ref | Vulnerability | Risk Type | Likelihood Basis | Impact Basis | Cell Position |
-|---|---|---|---|---|---|
-| V-01 | SMTP Non-standard Port Detection | 🔴 **High Risk** | **High** — CVSS Exploitability Subscore: 10.0; no authentication required; network-accessible | **Medium** — SMTP relay abuse can cause IP blacklisting, spam propagation, and reputational damage to mail infrastructure | High Likelihood × Medium Impact |
-| V-02 | SSL Certificate Cannot Be Trusted | 🔴 **High Risk** | **High** — CVSS Exploitability Subscore: 10.0; no authentication required; publicly exposed on four ports | **Medium** — Expired certificate enables MitM interception of user sessions, credentials, and sensitive data; browser warnings erode user trust | High Likelihood × Medium Impact |
-
-Both vulnerabilities are plotted in the **High Likelihood × Medium Impact** cell, producing a **High Risk** classification for each. This position confirms that both findings exceed the organizational risk appetite threshold and require immediate escalation and remediation — they cannot be deferred to a routine patching cycle without documented senior stakeholder risk acceptance.
-
----
-
-## 6. Risk Treatment Recommendations
-
-**Treatment Options Reference:**
-
-| Option | Description | Typical Application |
+| Rating | Likelihood | Business impact |
 |---|---|---|
-| **Mitigate** | Apply security controls or corrective actions to reduce the risk | Patching, configuration hardening, certificate renewal, port restriction |
-| **Accept** | Formally acknowledge the risk when within appetite, with documented rationale | Low findings with compensating controls and active monitoring |
-| **Transfer** | Shift impact to a third party | Cyber insurance, managed security services, contractual allocation |
-| **Avoid** | Eliminate the activity or condition generating the risk | Decommission unsupported services; disable unnecessary protocols |
+| Low (1) | Adverse event is unlikely given exposure and effective controls | Limited disruption or consequence |
+| Medium (2) | Adverse event is plausible under identified conditions | Meaningful but contained operational or data consequence |
+| High (3) | Evidence supports a likely adverse event with weak or absent controls | Major disruption or consequence to critical assets |
 
-**Treatment Assignments:**
+**Custom formula:** `Contextual score = Likelihood + Impact`
 
-| Ref | Finding | Treatment | Recommended Action | Priority |
-|---|---|---|---|---|
-| V-01 | SMTP Non-standard Port Detection | **Mitigate / Avoid** | Audit the SMTP configuration on port 26. If not operationally required, disable the listener. If required, restrict relay to authorized hosts and enforce SMTP AUTH. Review Exim 4.99.1 for known vulnerabilities. | Immediate |
-| V-02 | SSL Certificate Cannot Be Trusted | **Mitigate** | Renew the expired SSL/TLS certificate immediately across all affected ports (443, 2080, 2078, 2091). Verify the full certificate chain is correctly installed. Implement automated renewal via ACME/Let's Encrypt to prevent recurrence. | Immediate |
-
-> **Analyst Recommendation:** Both findings should be assigned a named owner with a remediation deadline not to exceed 14 days from the date of this report. Closure should be verified through a rescan or independent validation rather than assumed from a change ticket alone.
-
----
-
-## Appendix — Risk Register
-
-| Ref | Vulnerability | Nessus Plugin | Severity | Affected Service | Exploitability | Impact | Score | Rating | Matrix | Treatment |
-|---|---|---|---|---|---|---|---|---|---|---|
-| V-01 | SMTP Non-standard Port Detection | #18391 | Medium | `26/tcp` — SMTP | High (3) | Medium (2) | 5 | 🔴 High | High Prob × Med Impact | Mitigate / Avoid |
-| V-02 | SSL Certificate Cannot Be Trusted | #51192 | Medium | `443, 2080, 2078, 2091/tcp` — HTTPS | High (3) | Medium (2) | 6 | 🔴 High | High Prob × Med Impact | Mitigate |
-
----
-
-## Screenshot Index
-
-| File | Contents | Used In |
-|---|---|---|
-| `101-Nessus_vuln.png` | Nessus vulnerability list — 38 findings for www.halisans.com | Section 1 |
-| `001-Vulnerability_Calc_cvss2_0.png` | CVSS v2.0 calculator — V-01 score: 5.0 | Section 3 / V-01 |
-| `002-vuln_Calc_cvss2_0.png` | CVSS v2.0 calculator — V-02 score: 6.4 | Section 3 / V-02 |
-| `102-Nessus_SSL_Cert.png` | Nessus Plugin #51192 detail — expired certificate output | Section 3 / V-02 |
-
-**Screenshots excluded from this report (administrative / pre-scan / duplicate):**
-
-| File | Reason Excluded |
+| Score | Model rating |
 |---|---|
-| `12-Nessus_essentials_welcome.png` / `_-_Copy` | Empty "My Scans" folder — no findings present |
-| `12-Nessus_vuln_scan.png` / `_-_Copy` | Scan listed but not yet executed (Last Scanned: N/A) |
-| `12-Nessus_vuln_scanning.png` / `_-_Copy` | Scan in progress — no results available |
-| `12-Nessus_Vuln_Scan_result.png` / `_-_Copy` | Duplicate of `101-Nessus_vuln.png` |
-| `102-Nessus_ssl_cert_.png` | Duplicate of `102-Nessus_SSL_Cert.png` |
+| 2 | Low |
+| 3–4 | Medium |
+| 5–6 | High |
 
----
+### Consistent matrix
 
-## Disclaimer
+| Likelihood / Impact | Low (1) | Medium (2) | High (3) |
+|---|---|---|---|
+| High (3) | Medium — 4 | High — 5 | High — 6 |
+| Medium (2) | Medium — 3 | Medium — 4 | High — 5 |
+| Low (1) | Low — 2 | Medium — 3 | Medium — 4 |
 
-This assessment was conducted in an authorized academic and laboratory environment. All scanning and analysis activities were performed against systems within the explicitly defined and approved assessment scope using Tenable Nessus Essentials. No exploitation, privilege escalation, denial-of-service, or post-exploitation activity was conducted or attempted. This report is produced solely for educational and professional development purposes and does not constitute a formal penetration test or a complete enterprise security audit.
+Neither finding is plotted as an established business risk because the required context is unavailable. For illustration only, a hypothetical likelihood of 3 and impact of 2 would produce **5**, not 6, for either finding. This example is not a rating of the website.
 
----
+No actual organizational acceptance threshold, senior approval requirement, or remediation deadline is asserted. These decisions belong to the responsible service and risk owners.
 
-**Repository:** `nessus-risk-assessment-halisans`  
-**GitHub Description:** `Nessus Essentials vulnerability scan and CVSS v2.0 risk assessment of www.halisans.com — covering risk identification, scoring, heat map analysis, and treatment recommendations.`  
-**Topics:** `nessus` `vulnerability-assessment` `cvss` `risk-assessment` `tenable` `kali-linux` `cybersecurity` `ethical-hacking` `infosec` `penetration-testing`
+## Risk register and treatment plan
 
+| ID | Observation | Technical severity | Contextual risk | Proposed treatment | Proposed owner role | Status |
+|---|---|---|---|---|---|---|
+| V-01 | SMTP service on TCP 26 | Scanner-rated Medium; CVSS v2.0 5.0 | Pending service and control review | Validate purpose; mitigate or remove unnecessary exposure | Hosting/mail administrator | Open: validation required |
+| V-02 | Certificate-chain trust issue with expired certificate output | Scanner-rated Medium | Pending endpoint and client-impact review | Validate chain; correct confirmed certificate deployment issues | Hosting/TLS administrator | Open: validation required |
+
+The roles above are suggested responsibilities, not assignments to named people. Neither finding is accepted, remediated, or closed based on the supplied evidence.
+
+Certificate validation should receive prompt attention because invalid chains can affect client connectivity. The SMTP finding calls for configuration review; its non-standard port alone does not justify an emergency compromise response. Final priorities and deadlines should reflect confirmed impact and agreed service requirements.
+
+## Verification and closure criteria
+
+### V-01
+
+- Record the listener's owner and approved business purpose.
+- Review configuration evidence for access restrictions and relay controls.
+- If unnecessary, verify removal or restriction from the relevant network vantage point.
+- If expected, document why the plugin finding is an acceptable configuration observation and obtain the appropriate owner decision.
+- Retain rescan output. An intentional service may continue to trigger the detection plugin after appropriate controls are confirmed.
+
+### V-02
+
+- Record certificate subject, issuer, hostname coverage, validity dates, and full chain for each listed endpoint.
+- Confirm successful validation using intended hostname/SNI and a trusted client.
+- Retest with Nessus and review any remaining plugin output.
+- Record expiry monitoring and renewal verification.
+
+A change ticket or proposed recommendation is not evidence of successful closure.
+
+## Limitations
+
+- The review relies on screenshots rather than a complete `.nessus` export and scan configuration.
+- Differing result counts and scan views cannot be reconciled reliably from the supplied images.
+- Setup and running-scan screenshots show a feed/license error; its effect on final results is not established.
+- The supplied images do not demonstrate final completion of every scan run.
+- No authenticated configuration assessment, exploitation, open-relay validation, or interception test is demonstrated.
+- OS and service fingerprints require independent confirmation.
+- Business criticality, actual likelihood, compensating controls, and organizational risk appetite were not established.
+- No remediation or retest evidence was supplied.
+- Findings describe March 2026 observations, not the website's current security condition.
+
+## Screenshot checklist
+
+Create a folder named **`Screenshots`** beside `README.md`. Upload these five files using their exact names:
+
+| Filename | Contents | Use |
+|---|---|---|
+| `12-Nessus_Vuln_Scan_result.png` | Host-results view showing 38 entries | Evidence inventory |
+| `101-Nessus_vuln.png` | SMTP plugin 18391 details, port 26, and Exim banner | V-01 |
+| `102-Nessus_ssl_cert_.png` | Certificate finding with expired-certificate output | V-02 |
+| `001-Vulnerability_Calc_cvss2.0.png` | CVSS v2.0 calculator output: 5.0 | Scoring evidence |
+| `002-vuln_Calc_cvss2.0.png` | CVSS v2.0 calculator output: 6.4 | Scoring practice and limitations |
+
+Optional setup and workflow images include `12-Nessus_essentials_welcome.png`, `12-Nessus_vuln_scan.png`, and `12-Nessus_vuln_scanning.png`. They are not substitutes for final results and are not required by the image links above. Duplicate “Copy” files need not be added.
+
+## Skills demonstrated
+
+- Nessus scan-output interpretation and plugin evidence review.
+- Separation of informational observations, technical severity, and contextual risk.
+- CVSS scoring review and consistent custom matrix construction.
+- Conditional risk statements and remediation recommendations.
+- Risk-register documentation and evidence-based closure criteria.
+
+## References
+
+- [Tenable plugin 18391: SMTP Server Non-standard Port Detection](https://www.tenable.com/plugins/nessus/18391)
+- [Tenable plugin 51192: SSL Certificate Cannot Be Trusted](https://www.tenable.com/plugins/nessus/51192)
+- [Tenable guidance on resolving plugin 51192](https://docs.tenable.com/whitepapers/useful-plugins/Content/UsefulPlugins/Resolving51192.htm)
+- [FIRST CVSS v2.0 guide](https://www.first.org/cvss/v2/guide)
+- [FIRST CVSS v3.0 specification](https://www.first.org/cvss/v3.0/specification-document)
+
+## Assessment context
+
+The original project notes describe an authorized academic assessment. Screenshots support technical observations but do not establish permission boundaries. Any future testing must remain within the approved targets, methods, and timeframe.
+
+This report is an educational portfolio artifact. It does not claim a comprehensive penetration test, an approved enterprise risk decision, or demonstrated exploitation.
